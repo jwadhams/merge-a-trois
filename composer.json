@@ -1,0 +1,24 @@
+{
+  "name": "jwadhams/merge-a-trois",
+  "description": "Three-way merge for PHP array data",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Jeremy Wadhams",
+      "email": "jwadhams@dealerinspire.com"
+    }
+  ],
+  "require": {},
+  "minimum-stability": "dev",
+  "require": {
+    "php": ">=5.4.0"
+  },
+  "require-dev" : {
+    "phpunit/phpunit": "~4.0"
+  },
+  "autoload": {
+    "psr-0": {
+      "JWadhams": "src/"
+    }
+  }
+}
