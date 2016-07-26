@@ -209,10 +209,17 @@ class JsonLogicTest extends PHPUnit_Framework_TestCase{
 			[
 				['a'=>null], ['a'=>['b'=>null]], ['a'=>null],
 				['a'=>['b'=>null]]
-			]
+			],
 
-
-
+			// New complex children need merging
+			[
+				[], ['a' => ['fruit' =>'apple']], ['a'=>['vegetable'=>'asparagus']],
+				['a' => ['fruit' =>'apple', 'vegetable'=>'asparagus']]
+			],
+			[
+				[], ['a' => ['apple']], ['a'=>['asparagus']],
+				['a' => ['apple', 'asparagus']]
+			],
 
 		];
 	}

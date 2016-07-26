@@ -25,45 +25,55 @@ class MergeATrois{
       }
 
     }else{
-      //For associative arrays:
-      foreach($b as $key => $value){
-        //All of these exist on B
+      /*
+        For associative arrays:
 
-        //Does it exist on the original?
-        if( array_key_exists( $key, $original) ){
+        For every thing on A:
+          Exists on B, is complex : recursion
+          Exists on B, B differs from Original : B
+          Exists on B, B is Original : A
+          Doesn't exist on B, doesn't exist on Original : A
+          Doesn't exist on B, does exist on Original : skip
 
-          //Does it exist on all three?
-          if(array_key_exists( $key, $a ) ){
-            //and is an array (numeric or associative), use recursion
-            if(is_array($a[$key]) and is_array($original[$key]) and is_array($value)){
-              $result[$key] = self::merge($original[$key], $a[$key], $b[$key]);
-
-              //Primitive, and same in Original and B, return A (same or improved)
-            }elseif($original[$key] === $value){
-              $result[$key] = $a[$key];
-
-              //Otherwise (A changed and B changed, or A unchanged and B changed): B wins.
-            }else{
-              $result[$key] = $value;
-            }
+        For every thing on B:
+          Doesn't exist on A or Original : B
+      */
 
 
-          //Yes original, but deleted from A
+      foreach($a as $key => $value){
+
+        //Does it exist on B?
+        if(array_key_exists( $key, $b ) ){
+          //and is an array (numeric or associative), use recursion
+          if(is_array($a[$key]) and is_array($b[$key]) ){
+            //It could be new on both, or a primitive on original:
+            $recur_orig = (array_key_exists( $key, $original ) and is_array($original[$key]) ) ? $original[$key] : [];
+
+            $result[$key] = self::merge($recur_orig, $a[$key], $b[$key]);
+
+            //Exists on A and B, B the same as origin : use A
+          }elseif( array_key_exists( $key, $original ) and $original[$key] === $b[$key]){
+            $result[$key] = $a[$key];
+
+            //Exists on A and B, B differs from Origin (or is new) : B always wins
           }else{
-            //Do nothing
+            $result[$key] = $b[$key];
           }
 
-        //New to original, B wins (regardless of A)
+
+        //Does not exist on B, does not exist on origin, use A
+        }elseif( ! array_key_exists( $key, $original )){
+          $result[$key] = $a[$key];
+
+        //Does not exist on B, did exist on original (deleted) skip
         }else{
-              $result[$key] = $value;
         }
       }
 
-      //Now find data inserted on $a that $b doesn't know about
-      foreach($a as $key => $value){
-        if( ! array_key_exists($key, $original) and !array_key_exists($key, $b) ){
+      //Now find data inserted on $b that $a doesn't know about
+      foreach($b as $key => $value){
+        if( ! array_key_exists($key, $original) and !array_key_exists($key, $a) ){
           $result[$key] = $value;
-
         }
       }
     }
