@@ -81,15 +81,7 @@ class MergeATrois{
   }
 
   public static function is_numeric_array($array){
-    if(!is_array($array)) return false;
-
-    return array_reduce(
-      array_keys($array),
-      function($carry, $index){
-        return is_integer($index) and $index >= 0 and $carry;
-      },
-      true
-    );
+    return substr(json_encode($array), 0, 1) == '[';
   }
 
 }

@@ -24,13 +24,23 @@ class JsonLogicTest extends PHPUnit_Framework_TestCase{
 	public function numericArrayProvider(){
 		return [
 			[ ['a', 'b', 'c'], true ],
-			[ [0=>'a', 2=>'c'], true ],
+			[ [0=>'a', 1=>'b'], true ],
+			[ [0=>'a', 2=>'c'], false ],
+			[ ['0'=>'a', '1'=>'b'], true ],
 			[ [], true ],
 			[ [0=>'a', 'b'=>'banana'], false ],
 			[ ['a'=>'apple', 'b'=>'banana'], false ],
 			[ 'string', false],
 			[ 666, false],
 		];
+	}
+
+	public function testPreservesSemiNumeric(){
+		$original = $a = $b = $expected_result = [42=>'banana', 69=>'peach'];
+		$this->assertEquals(
+			$expected_result,
+			JWadhams\MergeATrois::merge($original, $a, $b)
+		);
 	}
 
 

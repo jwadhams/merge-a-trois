@@ -62,7 +62,18 @@ JWadhams\MergeATrois::merge($original, $a, $b);
 ```
 
 
-When merging numeric arrays, the algorithm looks for unique content. In this example, the algorithm internally acts as if the string 'apple' was deleted, and a new string 'APPLE' was added.
+When merging numeric arrays, the algorithm looks for unique content, and keys are ignored. Here, a and b both introduce new content in index 0, the algorithm keeps both contributions.
+
+```php
+$a = $b = $original = [];
+$a[] = 'apple';
+$b[] = 'banana';
+
+JWadhams\MergeATrois::merge($original, $a, $b);
+//['apple', 'banana']
+```
+
+In this example, the algorithm internally acts as if the string 'apple' was deleted, and a new string 'APPLE' was added.
 
 ```php
 $a = $b = $original = ['apple'];
@@ -73,7 +84,8 @@ JWadhams\MergeATrois::merge($original, $a, $b);
 //['APPLE', 'banana']
 ```
 
-The merge assumes elements in numeric arrays *do not* need to keep their index key. (The algorithm preserves order, and the contents of A are sequenced before additions to B.)
+Here the algorithm ignores that B's addition was made to the front of the array.
+ (The algorithm preserves order within a change set, and the contents of A are sequenced before additions to B.)
 
 ```php
 $a = $b = $original = ['apple'];
@@ -84,12 +96,14 @@ JWadhams\MergeATrois::merge($original, $a, $b);
 //['apple', 'banana']
 ```
 
-Arrays with zero-or-positive integer indices are processed as numeric arrays, and the old indices will not be preserved, even if A and B are unchanged.
+<b>Note</b> the merge algorithm defers to the PHP `json_encode` method to decide what is a numeric array: if `json_encode` uses JSON's `[]` representation, we treat the array as keys-don't-matter.  If your array is encoded like `{}`, it will be processed as an associative array, and indices *will* be preserved.
+
+(`json_encode` appears to look for sequential numeric zero-indexed keys with no gaps.)
 
 ```php
-$a = $b = $original = [42=>'banana', 69=>'peach'];
+$a = $b = $original = [2 => 'banana', 26 => 'zucchini'];
 JWadhams\MergeATrois::merge($original, $a, $b);
-//[ 'banana', 'peach' ]
+//[2 => 'banana', 26 => 'zucchini']
 ```
 
 
