@@ -89,9 +89,9 @@ class JsonLogicTest extends PHPUnit_Framework_TestCase{
 				[], ['apple'], ['apple'],
 				['apple']
 			],
-			[
+			[ //Each adds something different, B order then A order
 				[], ['apple'], ['banana'],
-				['apple','banana']
+				['banana','apple']
 			],
 			[
 				['apple'], ['apple'], ['apple', 'banana'],
@@ -185,9 +185,9 @@ class JsonLogicTest extends PHPUnit_Framework_TestCase{
 				['fruits'=>['apple']], ['fruits'=>['apple']], ['fruits'=>['apple', 'banana']],
 				['fruits'=>['apple', 'banana']]
 			],
-			[ //Two levels deep, a and b BOTH add to numeric array
+			[ //Two levels deep, a and b BOTH add to numeric array. B's order wins
 				['fruits'=>['apple']], ['fruits'=>['apple','banana']], ['fruits'=>['apple', 'cucumber']],
-				['fruits'=>['apple', 'banana', 'cucumber']]
+				['fruits'=>['apple', 'cucumber', 'banana']]
 			],
 			[
 				['fruits'=>['apple']], ['fruits'=>['apple','banana']], ['fruits'=>['apple'],'vegetables'=>['celery']],
@@ -226,10 +226,24 @@ class JsonLogicTest extends PHPUnit_Framework_TestCase{
 				[], ['a' => ['fruit' =>'apple']], ['a'=>['vegetable'=>'asparagus']],
 				['a' => ['fruit' =>'apple', 'vegetable'=>'asparagus']]
 			],
-			[
+			[ //A and B both add content to numeric array, B order wins
 				[], ['a' => ['apple']], ['a'=>['asparagus']],
-				['a' => ['apple', 'asparagus']]
+				['a' => ['asparagus', 'apple']]
 			],
+
+			// JSON has a way to differentiate empty object from empty array, but PHP has no way to differentiate empty associative array from empty numeric array. If an item changes from empty array to object, we certainly want the object to win
+			[
+				json_decode('{"finance":{}}', true),
+				json_decode('{"finance":{}}', true),
+				json_decode('{"finance":{"pay":"cash"}}', true),
+				json_decode('{"finance":{"pay":"cash"}}', true),
+			],
+			[
+				json_decode('{"finance":[]}', true),
+				json_decode('{"finance":[]}', true),
+				json_decode('{"finance":{"pay":"cash"}}', true),
+				json_decode('{"finance":{"pay":"cash"}}', true),
+			]
 
 		];
 	}

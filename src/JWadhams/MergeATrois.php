@@ -10,16 +10,17 @@ class MergeATrois{
     //When merging numeric-indexed arrays, ignore the indexes and just merge the contents.
     //Act as if Arrays can only contain primitives
     if( self::is_numeric_array($a) and self::is_numeric_array($b)){
-      //Everything in $a, unless it was known in $original and deleted in $b
-      foreach($a as $item){
-        if(! (in_array($item, $original) && !in_array($item, $b))){
+      //In the case of confusion, $b wins, including numeric array order
+      //Everything in $b, unless it was known in $original and deleted in $a
+      foreach($b as $item){
+        if(! (in_array($item, $original) && !in_array($item, $a))){
           array_push($result, $item);
         }
       }
 
-      foreach($b as $item){
-        //Everything in $b, that's new to BOTH A and original
-        if( !in_array($item, $original) && !in_array($item, $a) ){
+      //Everything in $a, that's new to BOTH $b and original
+      foreach($a as $item){
+        if( !in_array($item, $original) && !in_array($item, $b) ){
           array_push($result, $item);
         }
       }

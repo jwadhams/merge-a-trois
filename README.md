@@ -84,8 +84,9 @@ JWadhams\MergeATrois::merge($original, $a, $b);
 //['APPLE', 'banana']
 ```
 
-Here the algorithm ignores that B's addition was made to the front of the array.
- (The algorithm preserves order within a change set, and the contents of A are sequenced before additions to B.)
+A cardinal rule of this library is that when in doubt, the most recent change wins. So the returned numeric array will follow B's sequence, then append new content from A.
+
+In this example, we prepend content to B, and the merge result honor's B's order.
 
 ```php
 $a = $b = $original = ['apple'];
@@ -93,8 +94,21 @@ array_unshift($b, 'banana');
 // $b now equals ['banana', 'apple']
 
 JWadhams\MergeATrois::merge($original, $a, $b);
-//['apple', 'banana']
+//['banana', 'apple']
 ```
+
+In this example, the content is prepended to A. The merge result honors B's order, except to notice A's deletion.  Then the merge appends new content in A that B is unaware of.
+
+```php
+$a = $b = $original = ['zucchini'];
+unset($a[0]); //$a equals []
+array_unshift($a, 'apple'); //$a equals ['apple']
+array_unshift($b, 'banana'); //$b equals ['banana', 'zucchini']
+
+JWadhams\MergeATrois::merge($original, $a, $b);
+//['banana', 'apple']
+```
+
 
 <b>Note</b> the merge algorithm defers to the PHP `json_encode` method to decide what is a numeric array: if `json_encode` uses JSON's `[]` representation, we treat the array as keys-don't-matter.  If your array is encoded like `{}`, it will be processed as an associative array, and indices *will* be preserved.
 
