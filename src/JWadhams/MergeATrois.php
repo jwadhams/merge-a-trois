@@ -7,9 +7,21 @@ class MergeATrois{
 
     $result = [];
 
+    /*
+      We use a JSON representation to figure out if something is a numeric array.
+      We can use that same string to figure out if things are identical without writing our own deep inspection.
+      (This is a really stringent "identical" e.g., associative arrays with reordered properties will fail even if otherwise we don't care)
+      Note the Marge Simpson example in the docs, at the first level of recursion it'll notice that A didn't change "hobby" and B didn't change "person" -- it can take advantage of this shortcut
+    */
+    $a_json = json_encode($a);
+    $b_json = json_encode($b);
+    $o_json = json_encode($original);
+
+    if($a_json === $o_json){ return $b; } //No changes in A, return B
+    if($b_json === $o_json){ return $a; } //No changes in B, return A
+
     //When merging numeric-indexed arrays, ignore the indexes and just merge the contents.
-    //Act as if Arrays can only contain primitives
-    if( self::is_numeric_array($a) and self::is_numeric_array($b)){
+    if( self::is_numeric_array($a_json) and self::is_numeric_array($b_json)){
       //In the case of confusion, $b wins, including numeric array order
       //Everything in $b, unless it was known in $original and deleted in $a
       foreach($b as $item){
@@ -81,8 +93,14 @@ class MergeATrois{
   	return $result;
   }
 
-  public static function is_numeric_array($array){
-    return substr(json_encode($array), 0, 1) == '[';
+  /*
+    It's kind of awkward to figure out if a PHP array is numeric or associative.
+    So we don't.
+    Instead we defer to "if the built in JSON encoder puts a [ in front it's a numeric indexes-don't-matter array"
+  */
+  public static function is_numeric_array($json){
+    if(! is_string($json)){ $json = json_encode($json); }
+    return substr($json, 0, 1) == '[';
   }
 
 }

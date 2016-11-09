@@ -243,6 +243,16 @@ class JsonLogicTest extends PHPUnit_Framework_TestCase{
 				json_decode('{"finance":[]}', true),
 				json_decode('{"finance":{"pay":"cash"}}', true),
 				json_decode('{"finance":{"pay":"cash"}}', true),
+			],
+
+			//If either A or B has no changes (including in a recursive call inside an associative property) just return the other. This can save us some heartache in the order of numeric array elements, and should also be a hair faster on really big merges
+			[
+				[1,2,3], [1,2,3], [3,2,1],
+				[3,2,1]
+			],
+			[
+				[1,2,3], [3,2,1], [1,2,3],
+				[3,2,1]
 			]
 
 		];
