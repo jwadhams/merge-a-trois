@@ -59,19 +59,19 @@ class MergeATrois
 
             foreach ($a as $key => $value) {
 
+                // We've had problems in recursion where there's an object in the middle of the tree
+                if (isset($original[$key]) && gettype($original[$key]) === 'object') {
+                    $original[$key] = json_decode(json_encode($original[$key]), true);
+                }
+                if (isset($a[$key]) && gettype($a[$key]) === 'object') {
+                    $a[$key] = json_decode(json_encode($a[$key]), true);
+                }
+                if (isset($b[$key]) && gettype($b[$key]) === 'object') {
+                    $b[$key] = json_decode(json_encode($b[$key]), true);
+                }
+
                 //Does it exist on B?
                 if (array_key_exists($key, $b)) {
-
-                    // We've had problems in recursion where there's an object in the middle of the tree
-                    if (gettype($original[$key]) === 'object') {
-                        $original[$key] = json_decode(json_encode($original[$key]), true);
-                    }
-                    if (gettype($a[$key]) === 'object') {
-                        $a[$key] = json_decode(json_encode($a[$key]), true);
-                    }
-                    if (gettype($b[$key]) === 'object') {
-                        $b[$key] = json_decode(json_encode($b[$key]), true);
-                    }
 
                     //and is an array (numeric or associative), use recursion
                     if (is_array($a[$key]) and is_array($b[$key])) {
