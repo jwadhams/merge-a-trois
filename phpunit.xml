@@ -1,6 +1,5 @@
-<phpunit bootstrap="vendor/autoload.php" convertErrorsToExceptions="true"
-         convertNoticesToExceptions="true"
-         convertWarningsToExceptions="true" >
+<?xml version="1.0"?>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" bootstrap="vendor/autoload.php" xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.1/phpunit.xsd" cacheDirectory=".phpunit.cache">
   <testsuites>
     <testsuite name="JsonLogic">
       <directory>tests</directory>
