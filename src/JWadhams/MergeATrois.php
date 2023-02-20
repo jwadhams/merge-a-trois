@@ -4,7 +4,7 @@ namespace JWadhams;
 
 class MergeATrois
 {
-    public static function merge(array $original, array $a, array $b)
+    public static function merge(array $original, array $a, array $b, bool $shouldMergeNumericArrays = true)
     {
         $result = [];
 
@@ -27,19 +27,23 @@ class MergeATrois
 
         //When merging numeric-indexed arrays, ignore the indexes and just merge the contents.
         if (self::is_numeric_array($a_json) and self::is_numeric_array($b_json)) {
-            //In the case of confusion, $b wins, including numeric array order
-            //Everything in $b, unless it was known in $original and deleted in $a
-            foreach ($b as $item) {
-                if (! (in_array($item, $original) && !in_array($item, $a))) {
-                    array_push($result, $item);
+            if ($shouldMergeNumericArrays) {
+                //In the case of confusion, $b wins, including numeric array order
+                //Everything in $b, unless it was known in $original and deleted in $a
+                foreach ($b as $item) {
+                    if (! (in_array($item, $original) && !in_array($item, $a))) {
+                        array_push($result, $item);
+                    }
                 }
-            }
 
-            //Everything in $a, that's new to BOTH $b and original
-            foreach ($a as $item) {
-                if (!in_array($item, $original) && !in_array($item, $b)) {
-                    array_push($result, $item);
+                //Everything in $a, that's new to BOTH $b and original
+                foreach ($a as $item) {
+                    if (!in_array($item, $original) && !in_array($item, $b)) {
+                        array_push($result, $item);
+                    }
                 }
+            } else {
+                return $b;
             }
         } else {
             /*
@@ -78,7 +82,7 @@ class MergeATrois
                         //It could be new on both, or a primitive on original:
                         $recur_orig = (array_key_exists($key, $original) and is_array($original[$key])) ? $original[$key] : [];
 
-                        $result[$key] = self::merge($recur_orig, $a[$key], $b[$key]);
+                        $result[$key] = self::merge($recur_orig, $a[$key], $b[$key], $shouldMergeNumericArrays);
 
                     //Exists on A and B, B the same as origin : use A
                     } elseif (array_key_exists($key, $original) and $original[$key] === $b[$key]) {
